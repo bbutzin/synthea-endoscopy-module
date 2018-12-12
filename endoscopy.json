@@ -233,7 +233,8 @@
         }
       ],
       "direct_transition": "Post_Procedure_Pain",
-      "name": "Post_Procedure_Encounter"
+      "name": "Post_Procedure_Encounter",
+      "reason": "endoscopy_reason"
     },
     "Normal_Assessment_Delay": {
       "type": "Delay",
