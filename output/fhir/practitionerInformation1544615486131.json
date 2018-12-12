@@ -1,0 +1,100 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:6df71f54-1e4a-434a-a3dd-a8c0fa1728d7",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "6df71f54-1e4a-434a-a3dd-a8c0fa1728d7",
+        "extension": [
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-encounters-extension",
+            "valueInteger": 344
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "5239907069854105943"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Swift",
+            "given": [
+              "Carmen"
+            ],
+            "prefix": [
+              "Dr."
+            ]
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "107 LINCOLN STREET"
+            ],
+            "city": "WORCESTER",
+            "state": "MA",
+            "postalCode": "01605",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9c36b861-65f4-4b6f-b01d-579186d27fcb",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "9c36b861-65f4-4b6f-b01d-579186d27fcb",
+        "extension": [
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-encounters-extension",
+            "valueInteger": 2
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "5851471049621196445"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "D'Amore",
+            "given": [
+              "Casie"
+            ],
+            "prefix": [
+              "Dr."
+            ]
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "630 PLANTATION STREET"
+            ],
+            "city": "WORCESTER",
+            "state": "MA",
+            "postalCode": "1605",
+            "country": "US"
+          }
+        ],
+        "gender": "female"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    }
+  ]
+}

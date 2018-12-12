@@ -1,0 +1,136 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:5b2cb875-70aa-4625-9b95-c18644e1f667",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "5b2cb875-70aa-4625-9b95-c18644e1f667",
+        "extension": [
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-encounters-extension",
+            "valueInteger": 344
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-procedures-extension",
+            "valueInteger": 46
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-labs-extension",
+            "valueInteger": 73
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-prescriptions-extension",
+            "valueInteger": 20
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "5b2cb875-70aa-4625-9b95-c18644e1f667"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/organization-type",
+                "code": "prov",
+                "display": "Healthcare Provider"
+              }
+            ],
+            "text": "Healthcare Provider"
+          }
+        ],
+        "name": "ADCARE HOSPITAL OF WORCESTER INC",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "5087999000"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "107 LINCOLN STREET"
+            ],
+            "city": "WORCESTER",
+            "state": "MA",
+            "postalCode": "01605",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:a324d6d7-573a-478d-ab4e-3bcf0a325be8",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "a324d6d7-573a-478d-ab4e-3bcf0a325be8",
+        "extension": [
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-encounters-extension",
+            "valueInteger": 2
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-procedures-extension",
+            "valueInteger": 0
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-labs-extension",
+            "valueInteger": 0
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-prescriptions-extension",
+            "valueInteger": 0
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "a324d6d7-573a-478d-ab4e-3bcf0a325be8"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/organization-type",
+                "code": "prov",
+                "display": "Healthcare Provider"
+              }
+            ],
+            "text": "Healthcare Provider"
+          }
+        ],
+        "name": "FALLON CLINIC URGENT CARE",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "508-595-2505"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "630 PLANTATION STREET"
+            ],
+            "city": "WORCESTER",
+            "state": "MA",
+            "postalCode": "1605",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    }
+  ]
+}
