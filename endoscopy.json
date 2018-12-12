@@ -1,0 +1,424 @@
+{
+  "name": "endoscopy",
+  "remarks": [
+    "A blank module"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "name": "Initial",
+      "direct_transition": "Endoscopy_Age_Guard"
+    },
+    "Terminal": {
+      "type": "Terminal",
+      "name": "Terminal"
+    },
+    "Laparoscopy": {
+      "type": "SetAttribute",
+      "attribute": "endoscopy",
+      "direct_transition": "Abdominal_Pain_Onset",
+      "name": "Laparoscopy",
+      "value": "laparoscopy"
+    },
+    "Arthroscopy": {
+      "type": "SetAttribute",
+      "attribute": "endoscopy",
+      "direct_transition": "Joint_Pain_Onset",
+      "name": "Arthroscopy",
+      "value": "arthroscopy"
+    },
+    "Hysteroscopy_Urology": {
+      "type": "SetAttribute",
+      "attribute": "endoscopy",
+      "direct_transition": "Cystitis_Onset",
+      "name": "Hysteroscopy_Urology",
+      "value": "urology"
+    },
+    "Endoscopy_Age_Guard": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "Age",
+        "operator": ">=",
+        "quantity": 45,
+        "unit": "years",
+        "value": 0
+      },
+      "name": "Endoscopy_Age_Guard",
+      "direct_transition": "Endoscopy_Delay"
+    },
+    "Endoscopy_Delay": {
+      "type": "Delay",
+      "distributed_transition": [
+        {
+          "transition": "Arthroscopy",
+          "distribution": 0.3333
+        },
+        {
+          "transition": "Laparoscopy",
+          "distribution": 0.3333
+        },
+        {
+          "transition": "Hysteroscopy_Urology",
+          "distribution": 0.33340000000000003
+        }
+      ],
+      "name": "Endoscopy_Delay",
+      "range": {
+        "low": 0,
+        "high": 5,
+        "unit": "years"
+      }
+    },
+    "Endoscopy_Diagnosis_Encounter_End": {
+      "type": "EncounterEnd",
+      "name": "Endoscopy_Diagnosis_Encounter_End",
+      "direct_transition": "Endoscopy_Procedure_Delay"
+    },
+    "Endoscopy_Procedure_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "endoscopy_reason",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 305308003,
+          "display": "Admission by general surgeon"
+        }
+      ],
+      "direct_transition": "Endoscopy_Procedure",
+      "name": "Endoscopy_Procedure_Encounter"
+    },
+    "Endoscopy_Procedure": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 423827005,
+          "display": "Endoscopy"
+        }
+      ],
+      "duration": {
+        "low": 10,
+        "high": 90,
+        "unit": "minutes"
+      },
+      "name": "Endoscopy_Procedure",
+      "reason": "endoscopy_reason",
+      "distributed_transition": [
+        {
+          "transition": "bleeding_onset",
+          "distribution": 0.03
+        },
+        {
+          "transition": "Endoscopy_Procedure_Encounter_End",
+          "distribution": 0.97
+        }
+      ]
+    },
+    "Endoscopy_Procedure_Encounter_End": {
+      "type": "EncounterEnd",
+      "name": "Endoscopy_Procedure_Encounter_End",
+      "direct_transition": "hematoma_decision"
+    },
+    "Endoscopy_Procedure_Delay": {
+      "type": "Delay",
+      "direct_transition": "Endoscopy_Procedure_Encounter",
+      "name": "Endoscopy_Procedure_Delay",
+      "range": {
+        "low": 3,
+        "high": 30,
+        "unit": "days"
+      }
+    },
+    "Get_Body_Weight": {
+      "type": "Observation",
+      "category": "vital-signs",
+      "unit": "kg",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "3141-9",
+          "display": "Body weight"
+        }
+      ],
+      "direct_transition": "Get_Body_Height",
+      "name": "Get_Body_Weight",
+      "vital_sign": "weight"
+    },
+    "Get_Body_Height": {
+      "type": "Observation",
+      "category": "vital-signs",
+      "unit": "cm",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "3137-7",
+          "display": "Body height"
+        }
+      ],
+      "name": "Get_Body_Height",
+      "vital_sign": "weight",
+      "direct_transition": "Get_BMI"
+    },
+    "Get_BMI": {
+      "type": "Observation",
+      "category": "vital-signs",
+      "unit": "cm",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "39156-5",
+          "display": "Body mass index"
+        }
+      ],
+      "name": "Get_BMI",
+      "vital_sign": "BMI",
+      "direct_transition": "Pre_Procedure_Pain"
+    },
+    "Hematoma_Onset": {
+      "type": "ConditionOnset",
+      "target_encounter": "Post_Procedure_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 385494008,
+          "display": "Hematoma"
+        }
+      ],
+      "name": "Hematoma_Onset",
+      "direct_transition": "wound_infection_decision",
+      "assign_to_attribute": "post_procedure_disorder"
+    },
+    "Infected_Wound_Onset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "post_procedure_disorder",
+      "target_encounter": "Post_Procedure_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 58126003,
+          "display": "Postoperative wound infection"
+        }
+      ],
+      "direct_transition": "thrombus_decision",
+      "name": "Infected_Wound_Onset"
+    },
+    "Thrombus_Onset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "post_procedure_disorder",
+      "target_encounter": "Post_Procedure_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 111293003,
+          "display": "Venous thrombosis"
+        }
+      ],
+      "direct_transition": "regular_or_normal_encounter_decision",
+      "name": "Thrombus_Onset"
+    },
+    "Post_Procedure_Encounter_End": {
+      "type": "EncounterEnd",
+      "direct_transition": "Terminal",
+      "name": "Post_Procedure_Encounter_End"
+    },
+    "Post_Procedure_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 185389009,
+          "display": "Follow-up visit (procedure)"
+        }
+      ],
+      "direct_transition": "Post_Procedure_Pain",
+      "name": "Post_Procedure_Encounter"
+    },
+    "Normal_Assessment_Delay": {
+      "type": "Delay",
+      "name": "Normal_Assessment_Delay",
+      "range": {
+        "low": 3,
+        "high": 4,
+        "unit": "weeks"
+      },
+      "direct_transition": "Post_Procedure_Encounter"
+    },
+    "Emergency_Assessment_Delay": {
+      "type": "Delay",
+      "direct_transition": "Post_Procedure_Encounter",
+      "name": "Emergency_Assessment_Delay",
+      "range": {
+        "low": 1,
+        "high": 28,
+        "unit": "days"
+      }
+    },
+    "Endoscopy_Diagnosis_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "endoscopy_reason",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 185347001,
+          "display": "Encounter for problem"
+        }
+      ],
+      "name": "Endoscopy_Diagnosis_Encounter",
+      "direct_transition": "Get_Body_Weight"
+    },
+    "Abdominal_Pain_Onset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "endoscopy_reason",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 21522001,
+          "display": "Abdominal pain"
+        }
+      ],
+      "direct_transition": "Endoscopy_Diagnosis_Encounter",
+      "name": "Abdominal_Pain_Onset",
+      "target_encounter": "Endoscopy_Diagnosis_Encounter"
+    },
+    "Joint_Pain_Onset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "endoscopy_reason",
+      "target_encounter": "Endoscopy_Diagnosis_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 57676002,
+          "display": "Joint Pain"
+        }
+      ],
+      "direct_transition": "Endoscopy_Diagnosis_Encounter",
+      "name": "Joint_Pain_Onset"
+    },
+    "Cystitis_Onset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "endoscopy_reason",
+      "target_encounter": "Endoscopy_Diagnosis_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 38822007,
+          "display": "Cystitis"
+        }
+      ],
+      "direct_transition": "Endoscopy_Diagnosis_Encounter",
+      "name": "Cystitis_Onset"
+    },
+    "Pre_Procedure_Pain": {
+      "type": "Observation",
+      "category": "vital-signs",
+      "unit": "{score}",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "72514-3",
+          "display": "Pain severity - 0-10 verbal numeric rating [Score] - Reported"
+        }
+      ],
+      "range": {
+        "low": 5,
+        "high": 10
+      },
+      "name": "Pre_Procedure_Pain",
+      "direct_transition": "Endoscopy_Diagnosis_Encounter_End"
+    },
+    "Post_Procedure_Pain": {
+      "type": "Observation",
+      "category": "vital-signs",
+      "unit": "{score}",
+      "codes": [
+        {
+          "system": "LOINC",
+          "code": "72514-3",
+          "display": "Pain severity - 0-10 verbal numeric rating [Score] - Reported"
+        }
+      ],
+      "range": {
+        "low": 0,
+        "high": 10
+      },
+      "name": "Post_Procedure_Pain",
+      "direct_transition": "Post_Procedure_Encounter_End"
+    },
+    "hematoma_decision": {
+      "type": "Simple",
+      "name": "hematoma_decision",
+      "distributed_transition": [
+        {
+          "transition": "Hematoma_Onset",
+          "distribution": 0.125
+        },
+        {
+          "transition": "wound_infection_decision",
+          "distribution": 0.875
+        }
+      ]
+    },
+    "wound_infection_decision": {
+      "type": "Simple",
+      "name": "wound_infection_decision",
+      "distributed_transition": [
+        {
+          "transition": "Infected_Wound_Onset",
+          "distribution": 0.125
+        },
+        {
+          "transition": "thrombus_decision",
+          "distribution": 0.875
+        }
+      ]
+    },
+    "thrombus_decision": {
+      "type": "Simple",
+      "name": "thrombus_decision",
+      "distributed_transition": [
+        {
+          "transition": "Thrombus_Onset",
+          "distribution": 0.125
+        },
+        {
+          "transition": "regular_or_normal_encounter_decision",
+          "distribution": 0.875
+        }
+      ]
+    },
+    "regular_or_normal_encounter_decision": {
+      "type": "Simple",
+      "name": "regular_or_normal_encounter_decision",
+      "conditional_transition": [
+        {
+          "transition": "Normal_Assessment_Delay",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "post_procedure_disorder",
+            "operator": "is nil"
+          }
+        },
+        {
+          "transition": "Emergency_Assessment_Delay"
+        }
+      ]
+    },
+    "bleeding_onset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "",
+      "target_encounter": "Endoscopy_Procedure_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 213261000,
+          "display": "Intraoperative hemorrhage"
+        }
+      ],
+      "direct_transition": "Endoscopy_Procedure_Encounter_End",
+      "name": "bleeding_onset"
+    }
+  }
+}
