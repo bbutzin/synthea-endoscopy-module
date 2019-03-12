@@ -7,7 +7,7 @@
     "Initial": {
       "type": "Initial",
       "name": "Initial",
-      "direct_transition": "Endoscopy_Age_Guard"
+      "direct_transition": "Endoscopy_Guard"
     },
     "Terminal": {
       "type": "Terminal",
@@ -27,102 +27,14 @@
       "name": "Arthroscopy",
       "value": "arthroscopy"
     },
-    "Hysteroscopy_Urology": {
-      "type": "SetAttribute",
-      "attribute": "endoscopy",
-      "direct_transition": "Cystitis_Onset",
-      "name": "Hysteroscopy_Urology",
-      "value": "urology"
-    },
-    "Endoscopy_Age_Guard": {
-      "type": "Guard",
-      "allow": {
-        "condition_type": "Age",
-        "operator": ">=",
-        "quantity": 45,
-        "unit": "years",
-        "value": 0
-      },
-      "name": "Endoscopy_Age_Guard",
-      "direct_transition": "Endoscopy_Delay"
-    },
-    "Endoscopy_Delay": {
-      "type": "Delay",
-      "distributed_transition": [
-        {
-          "transition": "Arthroscopy",
-          "distribution": 0.3333
-        },
-        {
-          "transition": "Laparoscopy",
-          "distribution": 0.3333
-        },
-        {
-          "transition": "Hysteroscopy_Urology",
-          "distribution": 0.33340000000000003
-        }
-      ],
-      "name": "Endoscopy_Delay",
-      "range": {
-        "low": 0,
-        "high": 5,
-        "unit": "years"
-      }
-    },
     "Endoscopy_Diagnosis_Encounter_End": {
       "type": "EncounterEnd",
       "name": "Endoscopy_Diagnosis_Encounter_End",
       "direct_transition": "Endoscopy_Procedure_Delay"
     },
-    "Endoscopy_Procedure_Encounter": {
-      "type": "Encounter",
-      "encounter_class": "ambulatory",
-      "reason": "endoscopy_reason",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": 305308003,
-          "display": "Admission by general surgeon"
-        }
-      ],
-      "direct_transition": "Endoscopy_Procedure",
-      "name": "Endoscopy_Procedure_Encounter"
-    },
-    "Endoscopy_Procedure": {
-      "type": "Procedure",
-      "codes": [
-        {
-          "system": "SNOMED-CT",
-          "code": 423827005,
-          "display": "Endoscopy"
-        }
-      ],
-      "duration": {
-        "low": 10,
-        "high": 90,
-        "unit": "minutes"
-      },
-      "name": "Endoscopy_Procedure",
-      "reason": "endoscopy_reason",
-      "distributed_transition": [
-        {
-          "transition": "bleeding_onset",
-          "distribution": 0.03
-        },
-        {
-          "transition": "Endoscopy_Procedure_Encounter_End",
-          "distribution": 0.97
-        }
-      ]
-    },
-    "Endoscopy_Procedure_Encounter_End": {
-      "type": "EncounterEnd",
-      "name": "Endoscopy_Procedure_Encounter_End",
-      "direct_transition": "hematoma_decision"
-    },
     "Endoscopy_Procedure_Delay": {
       "type": "Delay",
-      "direct_transition": "Endoscopy_Procedure_Encounter",
+      "direct_transition": "Endoscopy_Encounter",
       "name": "Endoscopy_Procedure_Delay",
       "range": {
         "low": 3,
@@ -143,7 +55,7 @@
       ],
       "direct_transition": "Get_Body_Height",
       "name": "Get_Body_Weight",
-      "vital_sign": "weight"
+      "vital_sign": "Weight"
     },
     "Get_Body_Height": {
       "type": "Observation",
@@ -157,13 +69,13 @@
         }
       ],
       "name": "Get_Body_Height",
-      "vital_sign": "weight",
+      "vital_sign": "Height",
       "direct_transition": "Get_BMI"
     },
     "Get_BMI": {
       "type": "Observation",
       "category": "vital-signs",
-      "unit": "cm",
+      "unit": "kg/m2",
       "codes": [
         {
           "system": "LOINC",
@@ -219,8 +131,33 @@
     },
     "Post_Procedure_Encounter_End": {
       "type": "EncounterEnd",
-      "direct_transition": "Terminal",
-      "name": "Post_Procedure_Encounter_End"
+      "name": "Post_Procedure_Encounter_End",
+      "conditional_transition": [
+        {
+          "transition": "End_Postoperative_Conditions",
+          "condition": {
+            "condition_type": "PriorState",
+            "name": "Hematoma_Onset"
+          }
+        },
+        {
+          "transition": "End_Postoperative_Wound_Infection",
+          "condition": {
+            "condition_type": "PriorState",
+            "name": "Infected_Wound_Onset"
+          }
+        },
+        {
+          "transition": "End_Postoperative_Thrombus",
+          "condition": {
+            "condition_type": "PriorState",
+            "name": "Thrombus_Onset"
+          }
+        },
+        {
+          "transition": "Terminal"
+        }
+      ]
     },
     "Post_Procedure_Encounter": {
       "type": "Encounter",
@@ -410,7 +347,7 @@
     "bleeding_onset": {
       "type": "ConditionOnset",
       "assign_to_attribute": "",
-      "target_encounter": "Endoscopy_Procedure_Encounter",
+      "target_encounter": "Endoscopy_Encounter",
       "codes": [
         {
           "system": "SNOMED-CT",
@@ -418,8 +355,237 @@
           "display": "Intraoperative hemorrhage"
         }
       ],
-      "direct_transition": "Endoscopy_Procedure_Encounter_End",
+      "direct_transition": "bleeding_end",
       "name": "bleeding_onset"
+    },
+    "End_Postoperative_Conditions": {
+      "type": "ConditionEnd",
+      "direct_transition": "Terminal",
+      "name": "End_Postoperative_Conditions",
+      "condition_onset": "Hematoma_Onset"
+    },
+    "End_Endoscopy_Condition": {
+      "type": "ConditionEnd",
+      "direct_transition": "Endoscopy_Encounter_End",
+      "name": "End_Endoscopy_Condition",
+      "referenced_by_attribute": "endoscopy_reason"
+    },
+    "Endoscopy_Guard": {
+      "type": "Guard",
+      "allow": {
+        "condition_type": "And",
+        "conditions": [
+          {
+            "condition_type": "Date",
+            "operator": ">",
+            "year": 2014
+          },
+          {
+            "condition_type": "Age",
+            "operator": ">=",
+            "quantity": 45,
+            "unit": "years"
+          }
+        ]
+      },
+      "distributed_transition": [
+        {
+          "transition": "Arthroscopy",
+          "distribution": 0.3333
+        },
+        {
+          "transition": "Laparoscopy",
+          "distribution": 0.3333
+        },
+        {
+          "transition": "Cystoscopy",
+          "distribution": 0.33340000000000003
+        }
+      ],
+      "name": "Endoscopy_Guard"
+    },
+    "Cystoscopy": {
+      "type": "SetAttribute",
+      "attribute": "endoscopy",
+      "direct_transition": "Cystitis_Onset",
+      "name": "Cystoscopy",
+      "value": "urology"
+    },
+    "End_Postoperative_Wound_Infection": {
+      "type": "ConditionEnd",
+      "name": "End_Postoperative_Wound_Infection",
+      "direct_transition": "Terminal",
+      "condition_onset": "Infected_Wound_Onset"
+    },
+    "End_Postoperative_Thrombus": {
+      "type": "ConditionEnd",
+      "name": "End_Postoperative_Thrombus",
+      "direct_transition": "Terminal",
+      "condition_onset": "Thrombus_Onset"
+    },
+    "embolus_onset": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "",
+      "target_encounter": "Endoscopy_Encounter",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 302968001,
+          "display": "Arterial air embolus"
+        }
+      ],
+      "direct_transition": "embolus_end",
+      "name": "embolus_onset"
+    },
+    "Complication_bleeding_decision": {
+      "type": "Simple",
+      "name": "Complication_bleeding_decision",
+      "distributed_transition": [
+        {
+          "transition": "bleeding_onset",
+          "distribution": 0.03
+        },
+        {
+          "transition": "Complication_embolus_decision",
+          "distribution": 0.97
+        }
+      ]
+    },
+    "Complication_embolus_decision": {
+      "type": "Simple",
+      "name": "Complication_embolus_decision",
+      "distributed_transition": [
+        {
+          "transition": "End_Endoscopy_Condition",
+          "distribution": 0.97
+        },
+        {
+          "transition": "embolus_onset",
+          "distribution": 0.03
+        }
+      ]
+    },
+    "Laparoscopy_Procedure": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 423827005,
+          "display": "Endoscopy"
+        },
+        {
+          "system": "SNOMED-CT",
+          "code": 73632009,
+          "display": "Laparoscopy"
+        }
+      ],
+      "duration": {
+        "low": 10,
+        "high": 90,
+        "unit": "minutes"
+      },
+      "name": "Laparoscopy_Procedure",
+      "reason": "endoscopy_reason",
+      "direct_transition": "Complication_bleeding_decision"
+    },
+    "Arthroscopy_Procedure": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 423827005,
+          "display": "Endoscopy"
+        },
+        {
+          "system": "SNOMED-CT",
+          "code": 13714004,
+          "display": "Arthroscopy"
+        }
+      ],
+      "duration": {
+        "low": 10,
+        "high": 90,
+        "unit": "minutes"
+      },
+      "name": "Arthroscopy_Procedure",
+      "reason": "endoscopy_reason",
+      "direct_transition": "Complication_bleeding_decision"
+    },
+    "Cystoscopy_Procedure": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 423827005,
+          "display": "Endoscopy"
+        },
+        {
+          "system": "SNOMED-CT",
+          "code": 24139008,
+          "display": "Cystoscopy"
+        }
+      ],
+      "duration": {
+        "low": 10,
+        "high": 90,
+        "unit": "minutes"
+      },
+      "name": "Cystoscopy_Procedure",
+      "reason": "endoscopy_reason",
+      "direct_transition": "Complication_bleeding_decision"
+    },
+    "Endoscopy_Encounter_End": {
+      "type": "EncounterEnd",
+      "name": "Endoscopy_Encounter_End",
+      "direct_transition": "hematoma_decision"
+    },
+    "Endoscopy_Encounter": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "endoscopy_reason",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 305308003,
+          "display": "Admission by general surgeon"
+        }
+      ],
+      "name": "Endoscopy_Encounter",
+      "conditional_transition": [
+        {
+          "transition": "Laparoscopy_Procedure",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "endoscopy",
+            "operator": "==",
+            "value": "laparoscopy"
+          }
+        },
+        {
+          "transition": "Arthroscopy_Procedure",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "endoscopy",
+            "operator": "==",
+            "value": "arthroscopy"
+          }
+        },
+        {
+          "transition": "Cystoscopy_Procedure"
+        }
+      ]
+    },
+    "embolus_end": {
+      "type": "ConditionEnd",
+      "direct_transition": "End_Endoscopy_Condition",
+      "name": "embolus_end",
+      "condition_onset": "embolus_onset"
+    },
+    "bleeding_end": {
+      "type": "ConditionEnd",
+      "direct_transition": "Complication_embolus_decision",
+      "name": "bleeding_end",
+      "condition_onset": "bleeding_onset"
     }
   }
 }
