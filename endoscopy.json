@@ -373,20 +373,9 @@
     "Endoscopy_Guard": {
       "type": "Guard",
       "allow": {
-        "condition_type": "And",
-        "conditions": [
-          {
-            "condition_type": "Date",
-            "operator": ">",
-            "year": 2014
-          },
-          {
-            "condition_type": "Age",
-            "operator": ">=",
-            "quantity": 45,
-            "unit": "years"
-          }
-        ]
+        "condition_type": "Date",
+        "operator": ">",
+        "year": 2014
       },
       "distributed_transition": [
         {
